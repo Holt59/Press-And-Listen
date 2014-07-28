@@ -1,0 +1,45 @@
+{
+  "manifest_version": 2,
+
+  "name": "Press & Listen",
+  "description": "Chrome extension for Press & Listen application.",
+  "version": "1.0",
+
+  "icons": { 
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    },
+
+  "background": {
+    "scripts": ["press-and-listen-main.js"],
+    "persistent": false
+  },
+
+  "permissions": [
+      "tabs"
+  ],
+
+  "content_scripts": [
+    {
+        "matches": ["*://*.deezer.com/*"],
+        "js": ["deezer.js", "press-and-listen.js"],
+        "run_at": "document_end"
+    },
+    {
+        "matches": ["*://*.youtube.com/*"],
+        "js": ["youtube.js", "press-and-listen.js"],
+        "run_at": "document_end"
+    },
+    {
+        "matches": ["*://*.grooveshark.com/*"],
+        "js": ["grooveshark.js", "press-and-listen.js"],
+        "run_at": "document_end"
+    },
+    {
+        "matches": ["*://play.spotify.com/*"],
+        "js": ["spotify.js", "press-and-listen.js"],
+        "run_at": "document_end"
+    }
+  ]
+}
