@@ -234,7 +234,7 @@ GlobalShortcut::GlobalShortcut(QKeySequence shortcut) :
     if (!m_isFilterInstalled){
         QApplication * app = static_cast <QApplication*> (QApplication::instance());
         app->installNativeEventFilter(new GlobalShortcutEventFilter());
-        m_isFilterInstalled = True;
+        m_isFilterInstalled = true;
 
     }
     int allMods = Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier;
@@ -260,8 +260,8 @@ void GlobalShortcut::setHotKey(QKeySequence shortcut){
 
 void GlobalShortcut::registerKey(int nativeKey, int nativeMods){
 #ifdef Q_OS_LINUX
-    XGrabKey(QX11Info::display(), nativeKey, nativeMods, QX11Info::appRootWindow(), True, GrabModeAsync, GrabModeAsync);
-    XGrabKey(QX11Info::display(), nativeKey, nativeMods|Mod2Mask, QX11Info::appRootWindow(), True, GrabModeAsync, GrabModeAsync);
+    XGrabKey(QX11Info::display(), nativeKey, nativeMods, QX11Info::appRootWindow(), true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(QX11Info::display(), nativeKey, nativeMods|Mod2Mask, QX11Info::appRootWindow(), true, GrabModeAsync, GrabModeAsync);
     XSync(QX11Info::display(), False);
 #endif
 
