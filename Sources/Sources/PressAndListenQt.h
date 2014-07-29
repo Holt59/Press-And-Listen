@@ -6,7 +6,6 @@
 #include <QAction>
 
 #include "PressAndListenServer.h"
-#include "MediaKeyListener.h"
 #include "PlayerListWidget.h"
 #include "NotificationSettingsDialog.h"
 
@@ -18,7 +17,6 @@ public:
     PressAndListenQt(QWidget *parent = 0);
     ~PressAndListenQt();
 
-    virtual bool event (QEvent * e) Q_DECL_OVERRIDE ;
 
 protected:
     virtual void changeEvent (QEvent * e) Q_DECL_OVERRIDE ;
@@ -40,15 +38,24 @@ private Q_SLOTS:
     void showAboutPopup () ;
     void updateStatusBar () ;
 
+    // Player controler
+    void stop ();
+    void play ();
+    void prev ();
+    void next ();
+    void toggle ();
+    void prevPlayer ();
+    void nextPlayer ();
+
 private:
     
     void createActions () ;
     void createTrayIcon () ;
     void createMenus () ;
     void createStatusBar () ;
-    
+    void createShortcuts ();
+
     PressAndListenServer *m_server;
-    bool m_hotKeyEvent ;
     QAction *m_minimizeAction, *m_restoreAction, *m_quitAction, *m_aboutAction, *m_notifSettingsAction ;
     QSystemTrayIcon *m_trayIcon ;
     NotificationSettingsDialog *m_notifDialog ;

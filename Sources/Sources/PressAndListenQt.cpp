@@ -7,11 +7,13 @@
 #include <QStatusBar>
 #include <QHBoxLayout>
 
+#include "GlobalShortcut.h"
+
 typedef PressAndListenSettings::NotificationType NotifType ;
 typedef PressAndListenSettings PSettings ;
 
 PressAndListenQt::PressAndListenQt (QWidget *parent) : 
-QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)), m_hotKeyEvent(true) {
+QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)){
 
     PlayerListWidget *pwidget = new PlayerListWidget (this) ;
     setCentralWidget (pwidget);
@@ -25,6 +27,7 @@ QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)), m_hot
     createMenus () ;
     createStatusBar () ;
     createTrayIcon () ;
+    createShortcuts ();
 
     m_trayIcon->show () ;
 
@@ -113,6 +116,36 @@ void PressAndListenQt::createTrayIcon () {
     m_trayIcon->setToolTip ("Press & Listen");
 }
 
+void PressAndListenQt::createShortcuts () {
+    GlobalShortcut * shortcut = nullptr;
+
+    // Map keyboard media keys
+    shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaTogglePlayPause));
+    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::toggle);
+
+    shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaLast));
+    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::prev);
+
+    shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaNext));
+    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::next);
+
+    // Default Shortcuts
+    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Up")); // Meta is the Windows key
+    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::toggle);
+
+    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Right"));
+    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::next);
+
+    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Left"));
+    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::prev);
+
+    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Alt+Left"));
+    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::prevPlayer);
+
+    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Alt+Right"));
+    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::nextPlayer);
+}
+
 void PressAndListenQt::onPlayerEnter (PressAndListenPlayer * player) {
     if (PSettings ().showNotification (NotifType::PlayerEnter)) {
         m_trayIcon->showMessage ("Press & Listen", QString ("New player: ") + PlayerInfo::toString (player->player ())) ;
@@ -187,56 +220,59 @@ void PressAndListenQt::changeEvent (QEvent * e) {
     }
 }
 
-bool PressAndListenQt::event (QEvent * e) {
-
-    if (e->type () == MediaKeyListener::HotKey::AltStop) {
-        m_hotKeyEvent = !m_hotKeyEvent ;
-        return true ;
-    }
-
-    if (!m_hotKeyEvent || !m_server || m_server->currentPlayer () == nullptr) {
-        return QWidget::event (e) ;
-    }
-
+void PressAndListenQt::stop(){
     PressAndListenPlayer *player = m_server->currentPlayer () ;
+    if(!player)
+        return;
+    //player->stop(); // TODO : Stop is not defined !?
+}
 
-    switch (e->type ()) {
-        case MediaKeyListener::HotKey::Stop:
-            break ;
-        case MediaKeyListener::HotKey::Play: player->toggle () ;
-            break ;
-        case MediaKeyListener::HotKey::Prev: player->prev () ;
-            break ;
-        case MediaKeyListener::HotKey::Next: player->next () ;
-            break ;
-        case MediaKeyListener::HotKey::AltStop:
-            m_hotKeyEvent = !m_hotKeyEvent ;
-            break ;
-        case MediaKeyListener::HotKey::AltPlay:
-            break ;
-        case MediaKeyListener::HotKey::AltPrev:
-        {
-            PressAndListenPlayer *oldPlayer = player ;
-            player = m_server->prevPlayer () ;
-            if (oldPlayer != player) {
-                oldPlayer->pause () ;
-                player->play () ;
-            }
-        }
-            break ;
-        case MediaKeyListener::HotKey::AltNext:
-        {
-            PressAndListenPlayer *oldPlayer = player ;
-            player = m_server->prevPlayer () ;
-            if (oldPlayer != player) {
-                oldPlayer->pause () ;
-                player->play () ;
-            }
-        }
-            break ;
-        default:
-            return QWidget::event (e) ;
+void PressAndListenQt::play(){
+    PressAndListenPlayer *player = m_server->currentPlayer () ;
+    if(!player)
+        return;
+
+    player->play();
+}
+void PressAndListenQt::toggle(){
+    PressAndListenPlayer *player = m_server->currentPlayer () ;
+    if(!player)
+        return;
+
+    player->toggle();
+}
+
+void PressAndListenQt::prev(){
+    PressAndListenPlayer *player = m_server->currentPlayer () ;
+    if(!player)
+        return;
+    player->prev();
+}
+void PressAndListenQt::next(){
+    PressAndListenPlayer *player = m_server->currentPlayer () ;
+    if(!player)
+        return;
+     player->next();
+}
+void PressAndListenQt::prevPlayer(){
+    PressAndListenPlayer *player = m_server->currentPlayer () ;
+    if(!player)
+        return;
+    PressAndListenPlayer *oldPlayer = player ;
+    player = m_server->prevPlayer () ;
+    if (oldPlayer != player) {
+        oldPlayer->pause () ;
+        player->play () ;
     }
-    
-    return true ;
+}
+void PressAndListenQt::nextPlayer(){
+    PressAndListenPlayer *player = m_server->currentPlayer () ;
+    if(!player)
+        return;
+    PressAndListenPlayer *oldPlayer = player ;
+    player = m_server->nextPlayer () ;
+    if (oldPlayer != player) {
+        oldPlayer->pause () ;
+        player->play () ;
+    }
 }
