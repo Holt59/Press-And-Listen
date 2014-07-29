@@ -135,6 +135,7 @@ int toNativeKey (int qtKey) {
             case Qt::Key_Slash:
                 return VK_DIVIDE;
             case Qt::Key_MediaNext:
+            case Qt::Key_MediaLast:
                 return VK_MEDIA_NEXT_TRACK;
             case Qt::Key_MediaPrevious:
                 return VK_MEDIA_PREV_TRACK;
@@ -144,8 +145,6 @@ int toNativeKey (int qtKey) {
                 return VK_MEDIA_PLAY_PAUSE;
             case Qt::Key_MediaStop:
                 return VK_MEDIA_STOP;
-            case Qt::Key_MediaLast:
-                return VK_MEDIA_NEXT_TRACK ;
             case Qt::Key_VolumeDown:
                 return VK_VOLUME_DOWN;
             case Qt::Key_VolumeUp:
@@ -283,8 +282,8 @@ QString getLastWinError () {
 
 void GlobalShortcut::registerKey(int nativeKey, int nativeMods){
 #ifdef Q_OS_LINUX
-    XGrabKey(QX11Info::display(), nativeKey, nativeMods, QX11Info::appRootWindow(), true, GrabModeAsync, GrabModeAsync);
-    XGrabKey(QX11Info::display(), nativeKey, nativeMods|Mod2Mask, QX11Info::appRootWindow(), true, GrabModeAsync, GrabModeAsync);
+    XGrabKey(QX11Info::display(), nativeKey, nativeMods, QX11Info::appRootWindow(), True, GrabModeAsync, GrabModeAsync);
+    XGrabKey(QX11Info::display(), nativeKey, nativeMods|Mod2Mask, QX11Info::appRootWindow(), True, GrabModeAsync, GrabModeAsync);
     XSync(QX11Info::display(), False);
 #endif
 
