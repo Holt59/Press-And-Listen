@@ -1,5 +1,4 @@
-#include "pressandlistenqt.h"
-#include "MediaKeyListener.h"
+#include "PressAndListenQt.h"
 
 #include <QtWidgets/QApplication>
 
@@ -9,7 +8,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     PressAndListenQt w;
-    a.installNativeEventFilter (new MediaKeyListener (&w));
     w.show () ;
     return a.exec();
 }

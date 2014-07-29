@@ -1,4 +1,4 @@
-#include "pressandlistenqt.h"
+#include "PressAndListenQt.h"
 
 #include <QApplication>
 #include <QMessageBox>
