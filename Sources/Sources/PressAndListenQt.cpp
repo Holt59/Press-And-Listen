@@ -31,7 +31,7 @@ QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)){
     try {
         createShortcuts ();
     }
-    catch (KeyNotBoundException const& kne) {
+    catch (GlobalShortcut::KeyNotBoundException const& kne) {
         qDebug () << kne.info () << " - " << kne.key () ;
         QMessageBox::critical (this, "Error binding keyboard keys", kne.info()) ;
         exit (EXIT_FAILURE) ; // Not qApp->exit() since the event loop is not running
@@ -70,7 +70,7 @@ void PressAndListenQt::createActions () {
 
     m_restoreAction = new QAction (tr ("&Restore"), this);
     connect (m_restoreAction, &QAction::triggered, this, &QWidget::showNormal);
-
+    
     m_quitAction = new QAction (tr ("&Quit"), this);
     connect (m_quitAction, &QAction::triggered, qApp, &QApplication::quit);
 
@@ -129,29 +129,29 @@ void PressAndListenQt::createShortcuts () {
 
     // Map keyboard media keys
     shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaTogglePlayPause));
-    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::toggle);
+    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::toggle);
 
     shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaPrevious));
-    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::prev);
+    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::prev);
 
     shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaNext));
-    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::next);
+    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::next);
 
     // Default Shortcuts
     shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Up")); // Meta is the Windows key
-    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::toggle);
+    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::toggle);
 
     shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Right"));
-    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::next);
+    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::next);
 
     shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Left"));
-    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::prev);
+    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::prev);
 
     shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Alt+Left"));
-    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::prevPlayer);
+    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::prevPlayer);
 
     shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Alt+Right"));
-    connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::nextPlayer);
+    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::nextPlayer);
 }
 
 void PressAndListenQt::onPlayerEnter (PressAndListenPlayer * player) {

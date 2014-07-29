@@ -59,7 +59,7 @@ bool GlobalShortcutEventFilter::nativeEventFilter (const QByteArray & eventType,
   if (keycode > 0) {
       GlobalShortcut* shortcut = GlobalShortcut::shortcuts.value(QPair<quint32, quint32> (keycode, modifiers));
       if (shortcut) {
-          shortcut->activate();
+          shortcut->trigger ();
        }
   }
 

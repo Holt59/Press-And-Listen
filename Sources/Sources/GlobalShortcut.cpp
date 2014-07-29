@@ -308,6 +308,6 @@ void GlobalShortcut::unregisterKey(int nativeKey, int nativeMods){
 #endif
 }
 
-void GlobalShortcut::activate() {
-    emit activated();
+void GlobalShortcut::trigger () {
+    emit triggered ();
 }
