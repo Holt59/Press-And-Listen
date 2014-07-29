@@ -199,22 +199,18 @@ int toNativeKey (int qtKey) {
     return 0x0 ;
 }
 
+#ifdef Q_OS_LINUX
+
+#define MOD_SHIFT ShiftMask
+#define MOD_CONTROL ControlMask
+#define MOD_ALT Mod1Mask
+#define MOD_WIN Mod4Mask
+
+#endif
 
 int toNativeMods(int qtMods){
     int nativeMods = 0;
 
-#ifdef Q_OS_LINUX
-    if (qtMods & Qt::ShiftModifier)
-        nativeMods |= ShiftMask;
-    if (qtMods & Qt::ControlModifier)
-        nativeMods |= ControlMask;
-    if (qtMods & Qt::AltModifier)
-        nativeMods |= Mod1Mask;
-    if (qtMods & Qt::MetaModifier)
-        nativeMods |= Mod4Mask;
-#endif
-
-#ifdef Q_OS_WIN
     if (qtMods & Qt::ShiftModifier)
         nativeMods |= MOD_SHIFT;
     if (qtMods & Qt::ControlModifier)
@@ -223,7 +219,7 @@ int toNativeMods(int qtMods){
         nativeMods |= MOD_ALT;
     if (qtMods & Qt::MetaModifier)
         nativeMods |= MOD_WIN;
-#endif
+
     return nativeMods;
 }
 
