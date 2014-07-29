@@ -131,7 +131,7 @@ void PressAndListenQt::createShortcuts () {
     shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaTogglePlayPause));
     connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::toggle);
 
-    shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaLast));
+    shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaPrevious));
     connect(shortcut, &GlobalShortcut::activated, this, &PressAndListenQt::prev);
 
     shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaNext));
