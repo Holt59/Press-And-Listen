@@ -34,9 +34,10 @@ bool GlobalShortcutEventFilter::nativeEventFilter (const QByteArray & eventType,
     if (eventType == "windows_generic_MSG") {
         MSG *msg = static_cast <MSG *> (message) ;
 
-        if (msg->message == WM_HOTKEY){
-            keycode = HIWORD(msg->lParam);
-            modifiers = LOWORD(msg->lParam);
+        if (msg->message == WM_HOTKEY) {
+            keycode = msg->wParam >> 4;
+            modifiers = msg->wParam & 0xf;
+            qDebug () << hex << keycode << ", " << modifiers ;
         }
     }
 
@@ -55,9 +56,9 @@ bool GlobalShortcutEventFilter::nativeEventFilter (const QByteArray & eventType,
     }
 #endif
 
-  if (keycode>0){
-      GlobalShortcut* shortcut = GlobalShortcut::shortcuts.value(QPair<quint32, quint32>(keycode, modifiers));
-      if( shortcut ) {
+  if (keycode > 0) {
+      GlobalShortcut* shortcut = GlobalShortcut::shortcuts.value(QPair<quint32, quint32> (keycode, modifiers));
+      if (shortcut) {
           shortcut->activate();
        }
   }

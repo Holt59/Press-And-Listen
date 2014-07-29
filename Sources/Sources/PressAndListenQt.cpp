@@ -27,7 +27,15 @@ QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)){
     createMenus () ;
     createStatusBar () ;
     createTrayIcon () ;
-    createShortcuts ();
+
+    try {
+        createShortcuts ();
+    }
+    catch (KeyNotBoundException const& kne) {
+        qDebug () << kne.info () << " - " << kne.key () ;
+        QMessageBox::critical (this, "Error binding keyboard keys", kne.info()) ;
+        exit (EXIT_FAILURE) ; // Not qApp->exit() since the event loop is not running
+    }
 
     m_trayIcon->show () ;
 

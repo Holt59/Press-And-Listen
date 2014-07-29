@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QKeyEvent>
 
+#include <QDebug>
+
 #include "GlobalShortcutEventFilter.h"
 
 #ifdef Q_OS_WIN
@@ -23,9 +25,10 @@
 
 QHash<QPair<quint32, quint32>, GlobalShortcut*> GlobalShortcut::shortcuts;
 
-bool GlobalShortcut::m_isFilterInstalled = False;
+bool GlobalShortcut::m_isFilterInstalled = false;
 
-int toNativeKey(int qtKey){
+int toNativeKey (int qtKey) {
+
 #ifdef Q_OS_LINUX
         return XKeysymToKeycode(QX11Info::display(), XStringToKeysym(QKeySequence(qtKey).toString().toLatin1().data()));
 #endif
@@ -136,12 +139,13 @@ int toNativeKey(int qtKey){
             case Qt::Key_MediaPrevious:
                 return VK_MEDIA_PREV_TRACK;
             case Qt::Key_MediaPlay:
+            case Qt::Key_MediaRecord:
+            case Qt::Key_MediaTogglePlayPause:
                 return VK_MEDIA_PLAY_PAUSE;
             case Qt::Key_MediaStop:
                 return VK_MEDIA_STOP;
-                // couldn't find those in VK_*
-                //case Qt::Key_MediaLast:
-                //case Qt::Key_MediaRecord:
+            case Qt::Key_MediaLast:
+                return VK_MEDIA_NEXT_TRACK ;
             case Qt::Key_VolumeDown:
                 return VK_VOLUME_DOWN;
             case Qt::Key_VolumeUp:
@@ -160,7 +164,7 @@ int toNativeKey(int qtKey){
             case Qt::Key_7:
             case Qt::Key_8:
             case Qt::Key_9:
-                return key;
+                return qtKey;
 
                 // letters
             case Qt::Key_A:
@@ -189,13 +193,11 @@ int toNativeKey(int qtKey){
             case Qt::Key_X:
             case Qt::Key_Y:
             case Qt::Key_Z:
-                return key;
-
-            default:
-                throw KeyNotBoundException ();
-                return 0;
+                return qtKey;
         }
 #endif
+
+    return 0x0 ;
 }
 
 
@@ -227,8 +229,8 @@ int toNativeMods(int qtMods){
 }
 
 
-GlobalShortcut::GlobalShortcut(QKeySequence shortcut) :
-    QObject(0)
+GlobalShortcut::GlobalShortcut(QKeySequence shortcut, QObject *parent) :
+    QObject (parent), m_shortcut (shortcut)
 {
 
     if (!m_isFilterInstalled){
@@ -237,16 +239,22 @@ GlobalShortcut::GlobalShortcut(QKeySequence shortcut) :
         m_isFilterInstalled = true;
 
     }
+
     int allMods = Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier;
     int qtKey = shortcut[0] & ~(allMods); // Remove allMods on the key
     int qtMods = shortcut[0] &  allMods;
 
     m_key = toNativeKey(qtKey);
+
+    if (m_key == 0x0) {
+        throw KeyNotBoundException (shortcut, "Unable to find a corresponding native key.");
+    }
+
     m_mods = toNativeMods(qtMods);
 
     this->registerKey(m_key, m_mods);
 
-    shortcuts[QPair<quint32, quint32>(m_key,m_mods)] = this;
+    shortcuts[QPair<quint32, quint32>(m_key, m_mods)] = this;
 }
 
 
@@ -255,8 +263,23 @@ GlobalShortcut::~GlobalShortcut(){
     unregisterKey(m_key, m_mods);
 }
 
-void GlobalShortcut::setHotKey(QKeySequence shortcut){
+#ifdef Q_OS_WIN
+
+#define TO_HKEY_ID(k,m) ((nativeKey << 4) | (nativeMods & 0xf))
+
+QString getLastWinError () {
+    DWORD errorMessageID = ::GetLastError ();
+    if (errorMessageID == 0)
+        return QString () ;
+    LPSTR messageBuffer = nullptr;
+    size_t size = FormatMessageA (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                  NULL, errorMessageID, MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR) &messageBuffer, 0, NULL);
+    QString msg = QString::fromLatin1 (messageBuffer, size);
+    LocalFree (messageBuffer) ;
+    return msg ;
 }
+
+#endif
 
 void GlobalShortcut::registerKey(int nativeKey, int nativeMods){
 #ifdef Q_OS_LINUX
@@ -266,10 +289,12 @@ void GlobalShortcut::registerKey(int nativeKey, int nativeMods){
 #endif
 
 #ifdef Q_OS_WIN
-    if (!RegisterHotKey (NULL, nativeKey | nativeMods, MOD_NOREPEAT | nativeMods, nativeKey)) { throw KeyNotBoundException () ; }
+    // TODO: Add information about the key
+    if (!RegisterHotKey (NULL, TO_HKEY_ID(nativeKey, nativeMods), MOD_NOREPEAT | nativeMods, nativeKey)) { 
+        throw KeyNotBoundException (m_shortcut, getLastWinError()) ; 
+    }
 #endif
 }
-
 
 void GlobalShortcut::unregisterKey(int nativeKey, int nativeMods){
 #ifdef Q_OS_LINUX
@@ -279,10 +304,10 @@ void GlobalShortcut::unregisterKey(int nativeKey, int nativeMods){
 #endif
 
 #ifdef Q_OS_WIN
-    UnregisterHotKey(0, nativeKey);
+    UnregisterHotKey (0, TO_HKEY_ID (nativeKey, nativeMods));
 #endif
 }
 
-void GlobalShortcut::activate(){
+void GlobalShortcut::activate() {
     emit activated();
 }
