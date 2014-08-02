@@ -21,6 +21,7 @@
 #include <X11/keysym.h>
 #include <xcb/xcb.h>
 
+#include"3rdparty/qxt/keymapper_x11.h"
 #endif
 
 QHash<QPair<quint32, quint32>, GlobalShortcut*> GlobalShortcut::shortcuts;
@@ -30,6 +31,12 @@ bool GlobalShortcut::m_isFilterInstalled = false;
 int toNativeKey (int qtKey) {
 
 #ifdef Q_OS_LINUX
+
+        for (unsigned int i=1;i < sizeof(qtKey); i=i+2){
+            if (KeyTbl[i] == qtKey){
+                return KeyTbl[i-1];
+            }
+        }
         return XKeysymToKeycode(QX11Info::display(), XStringToKeysym(QKeySequence(qtKey).toString().toLatin1().data()));
 #endif
 
