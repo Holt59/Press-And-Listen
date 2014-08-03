@@ -39,7 +39,7 @@ private Q_SLOTS:
     void updateStatusBar () ;
 
     // Player controler
-    void stop ();
+    void pause ();
     void play ();
     void prev ();
     void next ();

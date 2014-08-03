@@ -228,43 +228,42 @@ void PressAndListenQt::changeEvent (QEvent * e) {
     }
 }
 
-void PressAndListenQt::stop(){
+void PressAndListenQt::pause () {
     PressAndListenPlayer *player = m_server->currentPlayer () ;
-    if(!player)
+    if (!player)
         return;
-    //player->stop(); // TODO : Stop is not defined !?
+    player->pause ();
 }
 
-void PressAndListenQt::play(){
+void PressAndListenQt::play () {
     PressAndListenPlayer *player = m_server->currentPlayer () ;
-    if(!player)
+    if (!player)
+        return;
+    player->play ();
+}
+void PressAndListenQt::toggle () {
+    PressAndListenPlayer *player = m_server->currentPlayer () ;
+    if (!player)
         return;
 
-    player->play();
-}
-void PressAndListenQt::toggle(){
-    PressAndListenPlayer *player = m_server->currentPlayer () ;
-    if(!player)
-        return;
-
-    player->toggle();
+    player->toggle ();
 }
 
-void PressAndListenQt::prev(){
+void PressAndListenQt::prev () {
     PressAndListenPlayer *player = m_server->currentPlayer () ;
-    if(!player)
+    if (!player)
         return;
-    player->prev();
+    player->prev ();
 }
-void PressAndListenQt::next(){
+void PressAndListenQt::next () {
     PressAndListenPlayer *player = m_server->currentPlayer () ;
-    if(!player)
+    if (!player)
         return;
-     player->next();
+    player->next ();
 }
-void PressAndListenQt::prevPlayer(){
+void PressAndListenQt::prevPlayer () {
     PressAndListenPlayer *player = m_server->currentPlayer () ;
-    if(!player)
+    if (!player)
         return;
     PressAndListenPlayer *oldPlayer = player ;
     player = m_server->prevPlayer () ;
@@ -273,9 +272,9 @@ void PressAndListenQt::prevPlayer(){
         player->play () ;
     }
 }
-void PressAndListenQt::nextPlayer(){
+void PressAndListenQt::nextPlayer () {
     PressAndListenPlayer *player = m_server->currentPlayer () ;
-    if(!player)
+    if (!player)
         return;
     PressAndListenPlayer *oldPlayer = player ;
     player = m_server->nextPlayer () ;
