@@ -80,7 +80,7 @@ void PressAndListenServer::onNewConnection () {
         loop.connect (player, &PressAndListenPlayer::initialized, &loop, &QEventLoop::quit);
         loop.exec ();
     }
-    if (PSettings ().isEnable (player->player ())) {
+    if (SETTINGS.isEnable (player->player ())) {
         m_players.push_back (player);
         connect (player, &PressAndListenPlayer::songChanged, this, &PressAndListenServer::onSongChanged) ;
         connect (player, &PressAndListenPlayer::close, this, &PressAndListenServer::onClose) ;

@@ -9,8 +9,8 @@
 
 #include "GlobalShortcut.h"
 
-typedef PressAndListenSettings::NotificationType NotifType ;
-typedef PressAndListenSettings PSettings ;
+typedef PressAndListenSettings::NotificationType NotificationType ;
+typedef PressAndListenSettings::ShortcutType ShortcutType ;
 
 PressAndListenQt::PressAndListenQt (QWidget *parent) : 
 QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)){
@@ -125,37 +125,23 @@ void PressAndListenQt::createTrayIcon () {
 }
 
 void PressAndListenQt::createShortcuts () {
-    GlobalShortcut * shortcut = nullptr;
 
-    // Map keyboard media keys
-    shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaTogglePlayPause));
-    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::toggle);
+    QMap <ShortcutType, void (PressAndListenQt::*) ()> shortcutSlots {
+            {PressAndListenSettings::ShortcutType::Toggle, &PressAndListenQt::toggle},
+            {PressAndListenSettings::ShortcutType::Next, &PressAndListenQt::next},
+            {PressAndListenSettings::ShortcutType::Previous, &PressAndListenQt::prev},
+            {PressAndListenSettings::ShortcutType::NextPlayer, &PressAndListenQt::nextPlayer},
+            {PressAndListenSettings::ShortcutType::PreviousPlayer, &PressAndListenQt::prevPlayer}
+    };
 
-    shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaPrevious));
-    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::prev);
+    for (auto shortcut : SETTINGS.getShortcutTypes ()) {
+        connect (new GlobalShortcut (SETTINGS.getShortcut (shortcut)), &GlobalShortcut::triggered, this, shortcutSlots[shortcut]) ;
+    }
 
-    shortcut = new GlobalShortcut(QKeySequence(Qt::Key_MediaNext));
-    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::next);
-
-    // Default Shortcuts
-    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Up")); // Meta is the Windows key
-    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::toggle);
-
-    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Right"));
-    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::next);
-
-    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Left"));
-    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::prev);
-
-    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Alt+Left"));
-    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::prevPlayer);
-
-    shortcut = new GlobalShortcut(QKeySequence("Ctrl+Meta+Alt+Right"));
-    connect (shortcut, &GlobalShortcut::triggered, this, &PressAndListenQt::nextPlayer);
 }
 
 void PressAndListenQt::onPlayerEnter (PressAndListenPlayer * player) {
-    if (PSettings ().showNotification (NotifType::PlayerEnter)) {
+    if (SETTINGS.showNotification (NotificationType::PlayerEnter)) {
         m_trayIcon->showMessage ("Press & Listen", QString ("New player: ") + PlayerInfo::toString (player->player ())) ;
     }
     connect (player, &PressAndListenPlayer::songChanged, this, &PressAndListenQt::onSongChanged);
@@ -165,7 +151,7 @@ void PressAndListenQt::onPlayerEnter (PressAndListenPlayer * player) {
 }
 
 void PressAndListenQt::onPlayerLeave (PressAndListenPlayer * player) {
-    if (PSettings ().showNotification (NotifType::PlayerLeave)) {
+    if (SETTINGS.showNotification (NotificationType::PlayerLeave)) {
         m_trayIcon->showMessage ("Press & Listen", QString ("End player: ") + PlayerInfo::toString (player->player ())) ;
     }
     updateStatusBar () ;
@@ -191,7 +177,7 @@ void PressAndListenQt::onPlayerCloseTab (PressAndListenPlayer * player) {
 }
 
 void PressAndListenQt::onSongChanged (PressAndListenSong const& oldSong, PressAndListenSong const& currentSong) {
-    if (!PSettings ().showNotification (NotifType::PlayerSwitchSong)) {
+    if (!SETTINGS.showNotification (NotificationType::PlayerSwitchSong)) {
         return ;
     }
     PressAndListenPlayer *player = qobject_cast <PressAndListenPlayer *> (sender ());
@@ -202,7 +188,7 @@ void PressAndListenQt::onSongChanged (PressAndListenSong const& oldSong, PressAn
     updateStatusBar () ;
 }
 void PressAndListenQt::onSongPaused (PressAndListenSong const& currentSong) {
-    if (!PSettings ().showNotification (NotifType::PlayerResume)) {
+    if (!SETTINGS.showNotification (NotificationType::PlayerResume)) {
         return ;
     }
     PressAndListenPlayer *player = qobject_cast <PressAndListenPlayer *> (sender ());
@@ -212,7 +198,7 @@ void PressAndListenQt::onSongPaused (PressAndListenSong const& currentSong) {
 }
 
 void PressAndListenQt::onSongResume (PressAndListenSong const& currentSong) {
-    if (!PSettings ().showNotification (NotifType::PlayerPaused)) {
+    if (!SETTINGS.showNotification (NotificationType::PlayerPaused)) {
         return ;
     }
     PressAndListenPlayer *player = qobject_cast <PressAndListenPlayer *> (sender ());

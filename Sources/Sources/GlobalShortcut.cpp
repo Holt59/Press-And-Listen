@@ -259,8 +259,6 @@ GlobalShortcut::GlobalShortcut(QKeySequence shortcut, QObject *parent) :
     shortcuts[QPair<quint32, quint32>(m_key, m_mods)] = this;
 }
 
-
-
 GlobalShortcut::~GlobalShortcut(){
     unregisterKey(m_key, m_mods);
 }
@@ -291,7 +289,6 @@ void GlobalShortcut::registerKey(int nativeKey, int nativeMods){
 #endif
 
 #ifdef Q_OS_WIN
-    // TODO: Add information about the key
     if (!RegisterHotKey (NULL, TO_HKEY_ID(nativeKey, nativeMods), MOD_NOREPEAT | nativeMods, nativeKey)) { 
         throw KeyNotBoundException (m_shortcut, getLastWinError()) ; 
     }

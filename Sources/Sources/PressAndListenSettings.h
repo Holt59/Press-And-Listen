@@ -2,6 +2,7 @@
 #define _PRESSANDLISTENSETTINGS_H
 
 #include <QSettings>
+#include <QKeySequence>
 
 #include "PressAndListenPlayer.h"
 
@@ -20,10 +21,21 @@ public:
         PlayerSwitchPlayer
     } ;
 
+    enum class ShortcutType {
+        Toggle,
+        Previous,
+        Next,
+        PreviousPlayer,
+        NextPlayer
+    } ;
+
 public:
 
     static QList <NotificationType> getNotificationTypes ();
     static QString toUserString (NotificationType const&);
+
+    static QList <ShortcutType> getShortcutTypes ();
+    static QString toUserString (ShortcutType const &) ;
 
     PressAndListenSettings (QObject * parent = 0);
     ~PressAndListenSettings ();
@@ -34,13 +46,18 @@ public:
 
     bool isEnable (PlayerInfo::Player const&) ;
 
+    QKeySequence getShortcut (ShortcutType const&) ;
+
 private:
 
     /* Return parameter name. */
     QString toString (NotificationType const&) ;
+    QString toString (ShortcutType const&) ;
+
+    static QMap <ShortcutType, QKeySequence> DEFAULT_SHORTCUTS ;
 
 };
 
-typedef PressAndListenSettings PSettings ;
+extern PressAndListenSettings SETTINGS ;
 
 #endif
