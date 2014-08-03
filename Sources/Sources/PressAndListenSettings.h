@@ -46,7 +46,7 @@ public:
 
     bool isEnable (PlayerInfo::Player const&) ;
 
-    QKeySequence getShortcut (ShortcutType const&) ;
+    QList <QKeySequence> getShortcut (ShortcutType const&) ;
 
 private:
 
@@ -54,7 +54,7 @@ private:
     QString toString (NotificationType const&) ;
     QString toString (ShortcutType const&) ;
 
-    static QMap <ShortcutType, QKeySequence> DEFAULT_SHORTCUTS ;
+    static QMap <ShortcutType, QList <QKeySequence>> DEFAULT_SHORTCUTS ;
 
 };
 

@@ -61,7 +61,7 @@ PressAndListenQt::~PressAndListenQt () {
 }
 
 void PressAndListenQt::showAboutPopup () {
-    QMessageBox::about (this, tr ("About"), tr("<p>Press & Listen, <br />© 2014 Mikaël Capelle</p>")) ;
+    QMessageBox::about (this, tr ("About"), tr("<h3>Press & Listen</h3> <p>© 2014<br />Mikaël Capelle<br />Jean-Baptiste Cayrou</p>")) ;
 }
 
 void PressAndListenQt::createActions () {
@@ -135,7 +135,9 @@ void PressAndListenQt::createShortcuts () {
     };
 
     for (auto shortcut : SETTINGS.getShortcutTypes ()) {
-        connect (new GlobalShortcut (SETTINGS.getShortcut (shortcut)), &GlobalShortcut::triggered, this, shortcutSlots[shortcut]) ;
+        for (auto key : SETTINGS.getShortcut (shortcut)) {
+            connect (new GlobalShortcut (key), &GlobalShortcut::triggered, this, shortcutSlots[shortcut]) ;
+        }
     }
 
 }

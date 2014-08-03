@@ -2,26 +2,27 @@
 
 PressAndListenSettings SETTINGS ;
 
-#if NO_MEDIA_KEYS
-#define SHORTCUT_TOGGLE Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Up
-#define SHORTCUT_NEXT Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Right
-#define SHORTCUT_PREVIOUS Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Left
-#define SHORTCUT_NEXT_PLAYER Qt::AltModifier | Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Right
-#define SHORTCUT_PREVIOUS_PLAYER Qt::AltModifier | Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Left
-#else
-#define SHORTCUT_TOGGLE Qt::Key_MediaTogglePlayPause
-#define SHORTCUT_NEXT Qt::Key_MediaNext
-#define SHORTCUT_PREVIOUS Qt::Key_MediaPrevious
-#define SHORTCUT_NEXT_PLAYER Qt::AltModifier | Qt::Key_MediaNext
-#define SHORTCUT_PREVIOUS_PLAYER Qt::AltModifier | Qt::Key_MediaPrevious
-#endif
-
-QMap <PressAndListenSettings::ShortcutType, QKeySequence> PressAndListenSettings::DEFAULT_SHORTCUTS {
-        {PressAndListenSettings::ShortcutType::Toggle, QKeySequence (SHORTCUT_TOGGLE)},
-        {PressAndListenSettings::ShortcutType::Next, QKeySequence (SHORTCUT_NEXT)},
-        {PressAndListenSettings::ShortcutType::Previous, QKeySequence (SHORTCUT_PREVIOUS)},
-        {PressAndListenSettings::ShortcutType::NextPlayer, QKeySequence (SHORTCUT_NEXT_PLAYER)},
-        {PressAndListenSettings::ShortcutType::PreviousPlayer, QKeySequence (SHORTCUT_PREVIOUS_PLAYER)}
+QMap <PressAndListenSettings::ShortcutType, QList <QKeySequence>> PressAndListenSettings::DEFAULT_SHORTCUTS {
+        {PressAndListenSettings::ShortcutType::Toggle, {
+            QKeySequence (Qt::Key_MediaTogglePlayPause),
+            QKeySequence (Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Up)
+        }},
+        {PressAndListenSettings::ShortcutType::Next, {
+            QKeySequence (Qt::Key_MediaNext), 
+            QKeySequence (Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Right)
+        }},
+        {PressAndListenSettings::ShortcutType::Previous, {
+            QKeySequence (Qt::Key_MediaPrevious), 
+            QKeySequence (Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Left)
+        }},
+        {PressAndListenSettings::ShortcutType::NextPlayer, {
+            QKeySequence (Qt::AltModifier | Qt::Key_MediaNext), 
+            QKeySequence (Qt::AltModifier | Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Right)
+        }},
+        {PressAndListenSettings::ShortcutType::PreviousPlayer, {
+            QKeySequence (Qt::AltModifier | Qt::Key_MediaPrevious), 
+            QKeySequence (Qt::AltModifier | Qt::ControlModifier | Qt::MetaModifier | Qt::Key_Left)
+        }}
 } ;
 
 QList <PressAndListenSettings::NotificationType> PressAndListenSettings::getNotificationTypes () {
@@ -122,6 +123,6 @@ QString PressAndListenSettings::toString (ShortcutType const& shortcut) {
     return QString () ;
 }
 
-QKeySequence PressAndListenSettings::getShortcut (ShortcutType const& shortcut) {
-    return QKeySequence (this->value (QString ("Shortcuts/" + this->toString (shortcut)), QVariant (DEFAULT_SHORTCUTS[shortcut].toString())).toString()) ;
+QList <QKeySequence> PressAndListenSettings::getShortcut (ShortcutType const& shortcut) {
+    return qvariant_cast <QList <QKeySequence>> (this->value (QString ("Shortcuts/" + this->toString (shortcut)), QVariant::fromValue(DEFAULT_SHORTCUTS[shortcut]))) ;
 }
