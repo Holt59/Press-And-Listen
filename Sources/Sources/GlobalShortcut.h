@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QException>
 #include <QKeySequence>
+#include <QAbstractNativeEventFilter>
 
 class GlobalShortcut : public QObject {
 
@@ -22,12 +23,18 @@ public:
         QString info () const throw () { return _what ; }
     };
 
+public:
+
+    static void enable () ;
+    static void disable (bool saveShortcuts = true) ;
+
     GlobalShortcut(QKeySequence hotkey, QObject *parent = 0);
     ~GlobalShortcut();
 
 protected:
 
-    static QHash<QPair<quint32, quint32>, GlobalShortcut*> shortcuts;
+    static QHash<QPair<quint32, quint32>, GlobalShortcut*> shortcuts ;
+    static QAbstractNativeEventFilter *nativeEventFilter ;
 
     friend class GlobalShortcutEventFilter ;
 

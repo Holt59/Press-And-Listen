@@ -21,8 +21,7 @@
 #endif
 
 GlobalShortcutEventFilter::GlobalShortcutEventFilter() :
-    QAbstractNativeEventFilter()
-{
+    QAbstractNativeEventFilter() {
 }
 
 bool GlobalShortcutEventFilter::nativeEventFilter (const QByteArray & eventType, void * message, long * result) {
@@ -61,6 +60,7 @@ bool GlobalShortcutEventFilter::nativeEventFilter (const QByteArray & eventType,
       if (shortcut) {
           shortcut->trigger ();
        }
+      return true ;
   }
 
   return false;

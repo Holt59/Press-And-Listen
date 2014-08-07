@@ -25,6 +25,27 @@
 #endif
 
 QHash<QPair<quint32, quint32>, GlobalShortcut*> GlobalShortcut::shortcuts;
+QAbstractNativeEventFilter *GlobalShortcut::nativeEventFilter = nullptr ;
+
+void GlobalShortcut::enable () {
+    if (GlobalShortcut::nativeEventFilter != nullptr) {
+        QApplication * app = static_cast <QApplication*> (QApplication::instance ());
+        app->removeNativeEventFilter (GlobalShortcut::nativeEventFilter) ;
+    }
+}
+
+void GlobalShortcut::disable (bool saveShortcuts) {
+    if (GlobalShortcut::nativeEventFilter != nullptr) {
+        QApplication * app = static_cast <QApplication*> (QApplication::instance ());
+        app->installNativeEventFilter (GlobalShortcut::nativeEventFilter) ;
+    }
+    if (!saveShortcuts) {
+        for (auto p : GlobalShortcut::shortcuts) {
+            delete p ;
+        }
+        GlobalShortcut::shortcuts.clear () ;
+    }
+}
 
 bool GlobalShortcut::m_isFilterInstalled = false;
 
@@ -237,9 +258,8 @@ GlobalShortcut::GlobalShortcut(QKeySequence shortcut, QObject *parent) :
 
     if (!m_isFilterInstalled){
         QApplication * app = static_cast <QApplication*> (QApplication::instance());
-        app->installNativeEventFilter(new GlobalShortcutEventFilter());
+        app->installNativeEventFilter(GlobalShortcut::nativeEventFilter = new GlobalShortcutEventFilter());
         m_isFilterInstalled = true;
-
     }
 
     int allMods = Qt::ShiftModifier | Qt::ControlModifier | Qt::AltModifier | Qt::MetaModifier;
@@ -305,6 +325,8 @@ void GlobalShortcut::unregisterKey(int nativeKey, int nativeMods){
 #ifdef Q_OS_WIN
     UnregisterHotKey (0, TO_HKEY_ID (nativeKey, nativeMods));
 #endif
+
+    shortcuts.remove (QPair<quint32, quint32> (nativeKey, nativeMods)) ;
 }
 
 void GlobalShortcut::trigger () {

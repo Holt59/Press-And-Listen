@@ -1,11 +1,12 @@
-#include "NotificationSettingsDialog.h"
+#include "ShortcutSettingsDialog.h"
+
+#include "PressAndListenSettings.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QListWidget>
 #include <QPushButton>
 
-NotificationSettingsDialog::NotificationSettingsDialog (QWidget *parent, Qt::WindowFlags flags) : QDialog (parent, flags) {
+ShortcutSettingsDialog::ShortcutSettingsDialog (QWidget *parent, Qt::WindowFlags flags) : QDialog (parent, flags) {
     setWindowTitle (tr ("Notification Settings")) ;
     setModal (true) ;
     if (parent) {
@@ -28,27 +29,7 @@ NotificationSettingsDialog::NotificationSettingsDialog (QWidget *parent, Qt::Win
     connect (resetButton, &QPushButton::clicked, this, &NotificationSettingsDialog::onResetClicked) ;
     connect (saveButton, &QPushButton::clicked, this, &NotificationSettingsDialog::onSaveClicked) ;
     connect (saveButton, &QPushButton::clicked, this, &NotificationSettingsDialog::hide) ;
-
 }
 
 
-NotificationSettingsDialog::~NotificationSettingsDialog () {}
-
-void NotificationSettingsDialog::onResetClicked () {
-    for (auto itnotif = m_checkboxes.begin () ; itnotif != m_checkboxes.end () ; ++itnotif) {
-        itnotif.value ()->setChecked (true) ;
-    }
-}
-
-void NotificationSettingsDialog::onSaveClicked () {
-    for (auto itnotif = m_checkboxes.begin () ; itnotif != m_checkboxes.end () ; ++itnotif) {
-        SETTINGS.setShowNotification (itnotif.key (), itnotif.value ()->isChecked ()) ;
-    }
-    SETTINGS.sync () ;
-}
-
-void NotificationSettingsDialog::showEvent (QShowEvent *) {
-    for (auto itnotif = m_checkboxes.begin () ; itnotif != m_checkboxes.end () ; ++itnotif) {
-        itnotif.value()->setChecked(PressAndListenSettings().showNotification(itnotif.key())) ;
-    }
-}
+ShortcutSettingsDialog::~ShortcutSettingsDialog () {}
