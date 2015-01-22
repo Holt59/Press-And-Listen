@@ -13,7 +13,7 @@ typedef PressAndListenSettings::NotificationType NotificationType ;
 typedef PressAndListenSettings::ShortcutType ShortcutType ;
 
 PressAndListenQt::PressAndListenQt (QWidget *parent) : 
-QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)){
+QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)) {
 
     PlayerListWidget *pwidget = new PlayerListWidget (this) ;
     setCentralWidget (pwidget);

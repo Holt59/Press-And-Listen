@@ -1,11 +1,14 @@
 #include "PressAndListenServer.h"
 
 #include <QEventLoop>
+#include <QFile>
+#include <QSslKey>
 
 #include "PressAndListenSettings.h"
 
 PressAndListenServer::PressAndListenServer (quint16 port, QObject *parent) : 
-    QWebSocketServer("Press And Listen Server", QWebSocketServer::SslMode::NonSecureMode, parent), m_currentPlayer(0) {
+    QWebSocketServer("Press And Listen Server", QWebSocketServer::NonSecureMode, parent), m_currentPlayer(0) {
+
     if (!this->listen (QHostAddress::Any, port)) {
         throw ServerNotStartedException () ;
     }
@@ -13,7 +16,6 @@ PressAndListenServer::PressAndListenServer (quint16 port, QObject *parent) :
     connect (this, &QWebSocketServer::newConnection, this, &PressAndListenServer::onNewConnection);
     connect (this, &QWebSocketServer::closed, this, &PressAndListenServer::onClose);
 }
-
 
 PressAndListenServer::~PressAndListenServer () {}
 
@@ -75,6 +77,7 @@ void PressAndListenServer::onUserWakeUpPlayer (PressAndListenPlayer *player) {
 
 void PressAndListenServer::onNewConnection () {
     PressAndListenPlayer *player = new PressAndListenPlayer (this->nextPendingConnection ()) ;
+    qDebug () << "Client connected: " << player->m_socket->peerName () << player->m_socket->origin() ;
     {
         QEventLoop loop;
         loop.connect (player, &PressAndListenPlayer::initialized, &loop, &QEventLoop::quit);
