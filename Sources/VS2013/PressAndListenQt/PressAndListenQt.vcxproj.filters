@@ -127,16 +127,19 @@
     <CustomBuild Include="..\..\Sources\GlobalShortcut.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\Sources\PressAndListenSettings.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\NotificationSettingsDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\PressAndListenSettings.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\GlobalShortcutEventFilter.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShortcutSettingsDialog.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
