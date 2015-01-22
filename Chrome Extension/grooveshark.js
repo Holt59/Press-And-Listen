@@ -6,7 +6,7 @@ var inject = '(' + function () {
 
 
     window.pressAndListen.playing = function () {
-        document.getElementById('play-pause').getAttribute('class').indexOf('playing') >= 0;
+        return document.getElementById('play-pause').getAttribute('class').indexOf('playing') >= 0;
     };
 
     window.pressAndListen.play = function () {
@@ -30,6 +30,9 @@ var inject = '(' + function () {
     };
 
     window.pressAndListen.song = function () {
+        if (document.getElementById('now-playing-metadata').getElementsByClassName('song').length == 0) {
+            return {};
+        }
         return {
             id: document.getElementById('now-playing-metadata').getElementsByClassName('song')[0].getAttribute('data-song-id'),
             title: document.getElementById('now-playing-metadata').getElementsByClassName('song')[0].title,

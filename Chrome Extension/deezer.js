@@ -9,19 +9,19 @@ var inject = '(' + function () {
     };
 
     window.pressAndListen.play = function () {
-        document.getElementById('player_control_play').click();
+        document.querySelector('.control.control-play').click();
     };
 
     window.pressAndListen.pause = function () {
-        document.getElementById('player_control_pause').click();
+        document.querySelector('.control.control-pause').click();
     };
 
     window.pressAndListen.prev = function () {
-        document.getElementById('player_control_prev').click();
+        document.querySelector('.control.control-prev').click();
     };
 
     window.pressAndListen.next = function () {
-        document.getElementById('player_control_next').click();
+        document.querySelector('.control.control-next').click();
     };
 
     window.pressAndListen.song = function () {

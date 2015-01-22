@@ -5,88 +5,65 @@ var inject = '(' + function () {
     function send (info) {
         websock.send(JSON.stringify(info));
     }
+
+    function sendSongInfo() {
+        document.dispatchEvent(new CustomEvent('PaL_SongInfoEvent', {
+            detail: {
+                playing: window.pressAndListen.playing(),
+                info: window.pressAndListen.song()
+            }
+        }));
+    }
     
-    function createSocket() {
-
-        websock = new WebSocket('ws://localhost:52132');
-
-        websock.onopen = function () {
-            send({
-                command: 'initialized',
-                browser: 'chrome',
-                player: window.pressAndListen.player
-            });
-        };
-
-        websock.onmessage = function (e) {
-            var cmd = e.data;
-
-            if (cmd == "closeTab") {
-                websock.close();
-                document.dispatchEvent(new CustomEvent('PaL_CloseTabEvent'));
-                return;
-            }
-
-            if (cmd == "focusTab") {
-                document.dispatchEvent(new CustomEvent('PaL_FocusTabEvent'));
-                return;
-            }
-
-            if (cmd == "toggle") {
+    document.addEventListener('PaL_CommandEvent', function (e) {
+        switch (e.detail) {
+            case "toggle":
                 if (window.pressAndListen.playing()) {
                     window.pressAndListen.pause();
                 }
                 else {
                     window.pressAndListen.play();
                 }
-            }
-            else if (cmd == "play") {
+                break;
+            case "play":
                 window.pressAndListen.play();
-            }
-            else if (cmd == "pause") {
+                break;
+            case "pause":
                 window.pressAndListen.pause();
-            }
-            else if (cmd == "prev") {
+                break;
+            case "prev":
                 window.pressAndListen.prev();
-            }
-            else if (cmd == "next") {
+                break;
+            case "next":
                 window.pressAndListen.next();
-            }
-            else {
+                break;
+            default:
                 console.log("Unknow command: " + cmd);
-            }
-            send({
-                command: 'songinfo',
-                playing: window.pressAndListen.playing(),
-                info: window.pressAndListen.song()
-            });
         }
-
-    }
-
-    createSocket();
+        sendSongInfo();
+    });
 
     setInterval(function () {
-        if (websock.readyState == WebSocket.OPEN) {
-            send({
-                command: 'songinfo',
-                playing: window.pressAndListen.playing(),
-                info: window.pressAndListen.song()
-            });
-        }
-        else if (websock.readyState != WebSocket.CONNECTING) {
-            createSocket();
-        }
+        sendSongInfo();
     }, 500);
+
+    document.dispatchEvent(new CustomEvent('Pal_OpenEvent', { detail: window.pressAndListen.player }));
 
 } + ') ()';
 
-document.addEventListener('PaL_CloseTabEvent', function (e) {
-    chrome.extension.sendMessage("closeTab");
-});
-
-document.addEventListener('PaL_FocusTabEvent', function (e) {
-    chrome.extension.sendMessage("focusTab");
+document.addEventListener('Pal_OpenEvent', function (e) {
+    var port = chrome.runtime.connect({ name: e.detail });
+    document.addEventListener('PaL_SongInfoEvent', function (e) {
+        port.postMessage({
+            type: 'songinfo',
+            info: e.detail
+        });
+    });
+    port.onMessage.addListener(function (msg) {
+        if (msg.type == 'command') {
+            document.dispatchEvent(new CustomEvent('PaL_CommandEvent', { detail: msg.command }));
+        }
+    });
 });
 
 var script = document.createElement('script');

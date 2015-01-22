@@ -4,16 +4,20 @@ var inject = '(' + function () {
         player: "youtube"
     } ;
 
+    function getVideoElement() {
+        return document.getElementsByTagName('video')[0];
+    }
+
     window.pressAndListen.playing = function () {
-        return !yt.player.utils.VideoTagPool.instance_.g[0].paused;
+        return !getVideoElement().paused;
     } ;
 
     window.pressAndListen.play = function () {
-        yt.player.utils.VideoTagPool.instance_.g[0].playVideo();
+        getVideoElement().play();
     };
 
     window.pressAndListen.pause = function () {
-        yt.player.utils.VideoTagPool.instance_.g[0].pauseVideo();
+        getVideoElement().pause();
     };
 
     window.pressAndListen.prev = function () {
@@ -35,7 +39,7 @@ var inject = '(' + function () {
         return {
             id: songInfo.querySelectorAll('meta[itemprop="videoId"]')[0].content,
             title: songInfo.querySelectorAll('meta[itemprop="name"]')[0].content,
-            artist: document.getElementById('watch7-user-header').getElementsByClassName('yt-user-name')[0].text
+            artist: document.getElementById('watch7-user-header').querySelector('.yt-user-info a').text
         };
     };
 

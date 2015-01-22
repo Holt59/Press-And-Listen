@@ -41,5 +41,9 @@
         "js": ["spotify.js", "press-and-listen.js"],
         "run_at": "document_end"
     }
-  ]
+  ],
+
+  "externally_connectable": {
+      "matches": ["*://*.deezer.com/*", "*://*.youtube.com/*"]
+  }
 }
