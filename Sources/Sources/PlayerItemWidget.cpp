@@ -6,6 +6,8 @@
 
 PlayerItemWidget::PlayerItemWidget (PressAndListenPlayer *player, QWidget *parent) : QFrame(parent), m_player (player) {
 
+    this->setFixedHeight (50) ;
+
     QHBoxLayout *layout = new QHBoxLayout () ;
     this->setLayout (layout) ;
 
