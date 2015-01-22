@@ -47,7 +47,7 @@ void PlayerItemWidget::updateInformation () {
         songInfo = QString ("No song playing.");
     }
     m_text->setText (QString ("<span class=\"song-info\">") + songInfo + QString ("</span>"));
-    this->setEnabled (m_player->isEnable ());
+    this->setEnabled (m_player->isEnabled ()) ;
     if (m_player->isCurrentPlayer ()) {
         m_active->setStyleSheet ("QFrame { background: blue ; }") ;
     }

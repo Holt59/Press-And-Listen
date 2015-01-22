@@ -47,9 +47,10 @@ namespace PlayerInfo {
         DEEZER,
         YOUTUBE,
         GROOVESHARK,
-        SPOTIFY,
-        GOOGLE_PLAY
+        SPOTIFY
     };
+
+    QList <Player> getPlayers ();
 
     class UnrecognizedPlayer : public QException {
     public:
@@ -73,7 +74,7 @@ public:
     PressAndListenPlayer (QWebSocket *socket, QObject *parent = 0);
     virtual ~PressAndListenPlayer ();
 
-    bool isEnable () const { return m_enabled ; }
+    bool isEnabled () const { return m_enabled ; }
     bool isCurrentPlayer () const { return m_currentPlayer ; }
     PlayerInfo::Player player () const { return m_player ; }
     PlayerInfo::Browser browser () const { return m_browser ; }

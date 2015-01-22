@@ -12,7 +12,9 @@ QObject (parent), m_socket (socket), m_enabled (true), m_currentPlayer (false), 
 }
 
 
-PressAndListenPlayer::~PressAndListenPlayer () { }
+PressAndListenPlayer::~PressAndListenPlayer () { 
+    m_socket->close () ;
+}
 
 void PressAndListenPlayer::toggle () { m_socket->sendTextMessage ("toggle"); }
 void PressAndListenPlayer::play () { m_socket->sendTextMessage ("play"); }
@@ -35,11 +37,20 @@ PlayerInfo::Player PressAndListenPlayer::toPlayer (QString const& str) {
     }
     if (str == "spotify") {
         return PlayerInfo::Player::SPOTIFY ;
-    }
+    }/*
     if (str == "gplay") {
         return PlayerInfo::Player::GOOGLE_PLAY ;
-    }
+    } */
     throw PlayerInfo::UnrecognizedPlayer () ;
+}
+
+QList <PlayerInfo::Player> PlayerInfo::getPlayers () {
+    return {
+        PlayerInfo::Player::DEEZER,
+        PlayerInfo::Player::YOUTUBE,
+        PlayerInfo::Player::GROOVESHARK,
+        PlayerInfo::Player::SPOTIFY
+    } ;
 }
 
 PlayerInfo::Browser PressAndListenPlayer::toBrowser (QString const& str) {
@@ -124,9 +135,9 @@ QString PlayerInfo::toString (Player player) {
         case Player::GROOVESHARK:
             return QString ("Grooveshark") ;
         case Player::SPOTIFY:
-            return QString ("Spotify") ;
+            return QString ("Spotify") ; /*
         case Player::GOOGLE_PLAY:
-            return QString ("Google Play") ;
+            return QString ("Google Play") ; */
     }
     return QString () ;
 }

@@ -27,7 +27,6 @@ NotificationSettingsDialog::NotificationSettingsDialog (QWidget *parent, Qt::Win
 
     connect (resetButton, &QPushButton::clicked, this, &NotificationSettingsDialog::onResetClicked) ;
     connect (saveButton, &QPushButton::clicked, this, &NotificationSettingsDialog::onSaveClicked) ;
-    connect (saveButton, &QPushButton::clicked, this, &NotificationSettingsDialog::hide) ;
 
 }
 
@@ -45,10 +44,11 @@ void NotificationSettingsDialog::onSaveClicked () {
         SETTINGS.setShowNotification (itnotif.key (), itnotif.value ()->isChecked ()) ;
     }
     SETTINGS.sync () ;
+    this->done (QDialog::Accepted) ;
 }
 
 void NotificationSettingsDialog::showEvent (QShowEvent *) {
     for (auto itnotif = m_checkboxes.begin () ; itnotif != m_checkboxes.end () ; ++itnotif) {
-        itnotif.value()->setChecked(PressAndListenSettings().showNotification(itnotif.key())) ;
+        itnotif.value()->setChecked(SETTINGS.showNotification(itnotif.key())) ;
     }
 }

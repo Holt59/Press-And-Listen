@@ -144,6 +144,7 @@
     <ClCompile Include="..\..\Sources\NotificationSettingsDialog.cpp" />
     <ClCompile Include="..\..\Sources\PlayerItemWidget.cpp" />
     <ClCompile Include="..\..\Sources\PlayerListWidget.cpp" />
+    <ClCompile Include="..\..\Sources\PlayerSettingsDialog.cpp" />
     <ClCompile Include="..\..\Sources\PressAndListenPlayer.cpp" />
     <ClCompile Include="..\..\Sources\PressAndListenQt.cpp" />
     <ClCompile Include="..\..\Sources\PressAndListenServer.cpp" />
@@ -228,7 +229,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ShortcutSettingsDialog.h" />
+    <ClInclude Include="..\..\Sources\PlayerSettingsDialog.h" />
     <CustomBuild Include="..\..\Sources\GlobalShortcut.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing GlobalShortcut.h...</Message>

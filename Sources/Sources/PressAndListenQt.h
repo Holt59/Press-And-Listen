@@ -8,6 +8,7 @@
 #include "PressAndListenServer.h"
 #include "PlayerListWidget.h"
 #include "NotificationSettingsDialog.h"
+#include "PlayerSettingsDialog.h"
 
 class PressAndListenQt : public QMainWindow {
 
@@ -56,9 +57,10 @@ private:
     void createShortcuts ();
 
     PressAndListenServer *m_server;
-    QAction *m_minimizeAction, *m_restoreAction, *m_quitAction, *m_aboutAction, *m_notifSettingsAction ;
+    QAction *m_minimizeAction, *m_restoreAction, *m_quitAction, *m_aboutAction, *m_notifSettingsAction, *m_playerSettingsAction ;
     QSystemTrayIcon *m_trayIcon ;
     NotificationSettingsDialog *m_notifDialog ;
+    PlayerSettingsDialog *m_playerDialog ;
 
 };
 

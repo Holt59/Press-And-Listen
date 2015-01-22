@@ -12,8 +12,17 @@
 typedef PressAndListenSettings::NotificationType NotificationType ;
 typedef PressAndListenSettings::ShortcutType ShortcutType ;
 
-PressAndListenQt::PressAndListenQt (QWidget *parent) : 
-QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)) {
+PressAndListenQt::PressAndListenQt (QWidget *parent) : QMainWindow (parent) {
+
+    /* Start the server... */
+
+    try {
+        m_server = new PressAndListenServer (SETTINGS.getServerPort (), parent) ;
+    }
+    catch (ServerNotStartedException const& err) {
+        QMessageBox::critical (this, "Unable to start server", "Unable to start server: " + err.info()) ;
+        exit (EXIT_FAILURE) ;
+    }
 
     PlayerListWidget *pwidget = new PlayerListWidget (this) ;
     setCentralWidget (pwidget);
@@ -22,6 +31,7 @@ QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)) {
     setWindowTitle ("Press & Listen") ;
 
     m_notifDialog = new NotificationSettingsDialog (this) ;
+    m_playerDialog = new PlayerSettingsDialog (this) ;
 
     createActions () ;
     createMenus () ;
@@ -51,6 +61,8 @@ QMainWindow (parent), m_server (new PressAndListenServer (52132, parent)) {
     connect (pwidget, &PlayerListWidget::playerFocusTab, this, &PressAndListenQt::onPlayerFocusTab);
     connect (pwidget, &PlayerListWidget::playerCloseTab, this, &PressAndListenQt::onPlayerCloseTab);
 
+    connect (m_playerDialog, &PlayerSettingsDialog::accepted, m_server, &PressAndListenServer::onSettingsChanged);
+
 }
 
 PressAndListenQt::~PressAndListenQt () { 
@@ -79,6 +91,8 @@ void PressAndListenQt::createActions () {
 
     m_notifSettingsAction = new QAction (tr ("&Notification Settings"), this);
     connect (m_notifSettingsAction, &QAction::triggered, m_notifDialog, &NotificationSettingsDialog::show);
+    m_playerSettingsAction = new QAction (tr ("&Player Settings"), this);
+    connect (m_playerSettingsAction, &QAction::triggered, m_playerDialog, &PlayerSettingsDialog::show);
 }
 
 void PressAndListenQt::createMenus () {
@@ -89,6 +103,7 @@ void PressAndListenQt::createMenus () {
 
     QMenu *settingsmenu = menuBar ()->addMenu (tr ("&Settings")) ;
     settingsmenu->addAction (m_notifSettingsAction);
+    settingsmenu->addAction (m_playerSettingsAction);
 
     menuBar ()->addAction (m_aboutAction) ;
 }

@@ -8,8 +8,15 @@
 
 class ServerNotStartedException : public QException {
 public:
-    ServerNotStartedException () : QException () {} 
+    ServerNotStartedException (QWebSocketProtocol::CloseCode err, QString const& info) : QException (), _err (err), _info (info) {}
     virtual ~ServerNotStartedException () throw () { }
+
+    QWebSocketProtocol::CloseCode error () const { return _err ; }
+    QString info () const { return _info ; }
+
+private:
+    QWebSocketProtocol::CloseCode _err ;
+    QString _info ;
 };
 
 class PressAndListenServer : public QWebSocketServer {
@@ -36,6 +43,8 @@ public Q_SLOTS:
 
     void onUserSleepPlayer (PressAndListenPlayer *) ;
     void onUserWakeUpPlayer (PressAndListenPlayer *) ;
+
+    void onSettingsChanged () ;
 
 private Q_SLOTS :
 

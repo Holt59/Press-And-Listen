@@ -10,7 +10,7 @@ PressAndListenServer::PressAndListenServer (quint16 port, QObject *parent) :
     QWebSocketServer("Press And Listen Server", QWebSocketServer::NonSecureMode, parent), m_currentPlayer(0) {
 
     if (!this->listen (QHostAddress::Any, port)) {
-        throw ServerNotStartedException () ;
+        throw ServerNotStartedException (this->error(), this->errorString()) ;
     }
     qDebug () << "Server listenning on: " << port ;
     connect (this, &QWebSocketServer::newConnection, this, &PressAndListenServer::onNewConnection);
@@ -24,7 +24,7 @@ PressAndListenPlayer* PressAndListenServer::prevPlayer () {
     if (!m_players.isEmpty ()) {
         m_currentPlayer = (m_currentPlayer == 0) ? m_players.size () - 1 : m_currentPlayer - 1;
         while (oldPlayer != this->currentPlayer ()
-               && !this->currentPlayer ()->isEnable ()) {
+               && !this->currentPlayer ()->isEnabled ()) {
             m_currentPlayer = (m_currentPlayer == 0) ? m_players.size () - 1 : m_currentPlayer - 1;
         }
     }
@@ -39,7 +39,7 @@ PressAndListenPlayer* PressAndListenServer::nextPlayer () {
     if (!m_players.isEmpty ()) {
         m_currentPlayer = (m_currentPlayer + 1) % m_players.size () ;
         while (oldPlayer != this->currentPlayer ()
-               && !this->currentPlayer ()->isEnable ()) {
+               && !this->currentPlayer ()->isEnabled ()) {
             m_currentPlayer = (m_currentPlayer + 1) % m_players.size () ;
         }
     }
@@ -83,7 +83,7 @@ void PressAndListenServer::onNewConnection () {
         loop.connect (player, &PressAndListenPlayer::initialized, &loop, &QEventLoop::quit);
         loop.exec ();
     }
-    if (SETTINGS.isEnable (player->player ())) {
+    if (SETTINGS.isPlayerEnabled (player->player ())) {
         m_players.push_back (player);
         connect (player, &PressAndListenPlayer::songChanged, this, &PressAndListenServer::onSongChanged) ;
         connect (player, &PressAndListenPlayer::close, this, &PressAndListenServer::onClose) ;
@@ -97,6 +97,28 @@ void PressAndListenServer::onNewConnection () {
     }
     else {
         player->deleteLater () ;
+    }
+}
+
+void PressAndListenServer::onSettingsChanged () {
+    qDebug () << "Changed." ;
+    QMutableListIterator <PressAndListenPlayer *> player (m_players) ;
+    bool toCurrent = false ;
+    while (player.hasNext ()) {
+        auto p = player.next () ;
+        if (!SETTINGS.isPlayerEnabled (p->player ())) {
+            player.remove () ;
+            emit playerLeave (p);
+            p->deleteLater () ;
+            toCurrent = true ;
+        }
+        else if (toCurrent) {
+            toCurrent = false ;
+            p->setIsCurrentPlayer (true) ;
+        }
+    }
+    if (toCurrent && m_players.size () > 0) {
+        m_players[0]->setIsCurrentPlayer (true) ;
     }
 }
 

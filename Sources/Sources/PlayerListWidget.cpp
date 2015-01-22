@@ -45,7 +45,7 @@ void PlayerListWidget::onCustomMenuRequested (QPoint pos) {
     PressAndListenPlayer *player = m_players[m_contextMenuRow] ;
 
     QMenu *menu = new QMenu (this);
-    if (player->isEnable ()) {
+    if (player->isEnabled ()) {
         menu->addAction (m_setAsCurrentPlayer);
         menu->addAction (m_sleepPlayer);
     }

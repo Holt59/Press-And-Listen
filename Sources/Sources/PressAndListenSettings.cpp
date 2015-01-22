@@ -108,8 +108,12 @@ void PressAndListenSettings::setShowNotification (NotificationType const& notifi
     this->setValue (QString ("Notifications/") + toString (notification), QVariant (newValue)) ;
 }
 
-bool PressAndListenSettings::isEnable (PlayerInfo::Player const& player) {
+bool PressAndListenSettings::isPlayerEnabled (PlayerInfo::Player const& player) {
     return this->value (QString("Players/") + PlayerInfo::toString(player), QVariant (true)).toBool () ;
+}
+
+void PressAndListenSettings::setPlayerEnabled (PlayerInfo::Player const& player, bool enabled) {
+    this->setValue (QString ("Players/") + PlayerInfo::toString (player), QVariant (enabled)) ;
 }
 
 QString PressAndListenSettings::toString (ShortcutType const& shortcut) {
@@ -125,4 +129,8 @@ QString PressAndListenSettings::toString (ShortcutType const& shortcut) {
 
 QList <QKeySequence> PressAndListenSettings::getShortcut (ShortcutType const& shortcut) {
     return qvariant_cast <QList <QKeySequence>> (this->value (QString ("Shortcuts/" + this->toString (shortcut)), QVariant::fromValue(DEFAULT_SHORTCUTS[shortcut]))) ;
+}
+
+quint16 PressAndListenSettings::getServerPort () {
+    return this->value (QString ("Server/Port"), 52132).toInt () ;
 }

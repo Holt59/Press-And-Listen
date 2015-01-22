@@ -44,9 +44,12 @@ public:
     bool showNotification (NotificationType const&) ;
     void setShowNotification (NotificationType const&, bool) ;
 
-    bool isEnable (PlayerInfo::Player const&) ;
+    bool isPlayerEnabled (PlayerInfo::Player const&) ;
+    void setPlayerEnabled (PlayerInfo::Player const&, bool) ;
 
     QList <QKeySequence> getShortcut (ShortcutType const&) ;
+
+    quint16 getServerPort () ;
 
 private:
 
