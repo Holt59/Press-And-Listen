@@ -29,7 +29,8 @@ HEADERS += \
     ../Sources/PlayerItemWidget.h \
     ../Sources/PressAndListenServer.h \
     ../Sources/GlobalShortcut.h \
-    ../Sources/GlobalShortcutEventFilter.h
+    ../Sources/GlobalShortcutEventFilter.h \
+    ../Sources/PlayerSettingsDialog.h
 
 SOURCES += \
     ../Sources/PressAndListenPlayer.cpp \
@@ -41,4 +42,5 @@ SOURCES += \
     ../Sources/PressAndListenSettings.cpp \
     ../Sources/main.cpp \
     ../Sources/GlobalShortcut.cpp \
-    ../Sources/GlobalShortcutEventFilter.cpp
+    ../Sources/GlobalShortcutEventFilter.cpp \
+    ../Sources/PlayerSettingsDialog.cpp
